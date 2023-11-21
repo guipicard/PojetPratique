@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class CrystalsBehaviour : MonoBehaviour
 {
@@ -52,6 +53,8 @@ public class CrystalsBehaviour : MonoBehaviour
         m_AiActive = 0;
         m_CrystalActive = 1;
         m_Elapsed = 0;
+        m_AiActive = 0;
+        m_CrystalActive = 0;
 
         m_PotentialPosition = new HashSet<Vector2>();
         m_CrystalsPosition = new HashSet<Vector2>();
@@ -77,12 +80,10 @@ public class CrystalsBehaviour : MonoBehaviour
     {
         if (m_Biome == LevelManager.instance.currentWorld)
         {
-            m_AiActive = GetAiCount();
-            m_CrystalActive = GetCrystalCount();
+            
             FillCrystalList();
             GetNewPositions();
             Multiply();
-            m_CrystalActive = GetCrystalCount();
             if (m_AiActive < 1 || m_AiActive + 1 <= (m_CrystalActive / LevelManager.instance.m_AiByCrystals) + 1)
             {
                 SpawnAi();
@@ -121,7 +122,7 @@ public class CrystalsBehaviour : MonoBehaviour
             {
                 Vector2 m_currentPosition = m_SurroundOffsets[j] + pos;
 
-                m_Ray.origin = new Vector3(m_currentPosition.x, m_CrystalHeight + 5.0f, m_currentPosition.y);
+                m_Ray.origin = new Vector3(m_currentPosition.x, 5.0f, m_currentPosition.y);
                 if (Physics.Raycast(m_Ray, out m_HitInfo, Mathf.Infinity))
                 {
                     if (m_HitInfo.collider.gameObject.layer == 8 || m_HitInfo.collider.gameObject.layer == 6)
@@ -144,8 +145,7 @@ public class CrystalsBehaviour : MonoBehaviour
             if (chances == 0 && myRaycast)
             {
                 CrystalEvents eventScript = m_HitInfo.collider.GetComponent<CrystalEvents>();
-                if (m_HitInfo.collider.gameObject.layer == 6 &&
-                    eventScript.GetCanDestroy())
+                if (m_HitInfo.collider.gameObject.layer == 6 && eventScript.GetCanDestroy())
                 {
                     int hitId = eventScript.m_Id;
                     int hitActiveInSceneCount = LevelManager.instance.GetSpawner(hitId).m_CrystalActive;
@@ -154,16 +154,22 @@ public class CrystalsBehaviour : MonoBehaviour
                     {
                         eventScript.m_Id = -1;
                         LevelManager.instance.ToggleInactive(m_HitInfo.collider.gameObject);
+                        m_HitInfo.collider.gameObject.GetComponent<CrystalsBehaviour>().m_CrystalActive--;
                         newWave.Add(pos);
-                        Vector3 newPos = new Vector3(pos.x, m_CrystalHeight, pos.y);
-                        LevelManager.instance.SpawnObj(m_CrystalTag, newPos, Quaternion.identity);
+                        Vector3 newPos = new Vector3(pos.x, m_HitInfo.point.y, pos.y);
+                        var obj = LevelManager.instance.SpawnObj(m_CrystalTag, newPos, Quaternion.identity);
+                        m_CrystalActive++;
+                        obj.GetComponent<CrystalEvents>().m_Interface = this;
+                        obj.GetComponent<CrystalEvents>().m_Id = m_Id;
                     }
                 }
                 else if (m_HitInfo.collider.gameObject.layer == 8)
                 {
                     newWave.Add(pos);
-                    var newCrystalPosition = new Vector3(pos.x, m_CrystalHeight, pos.y);
+                    var newCrystalPosition = new Vector3(pos.x, m_HitInfo.point.y, pos.y);
                     var obj = LevelManager.instance.SpawnObj(m_CrystalTag, newCrystalPosition, Quaternion.identity);
+                    m_CrystalActive++;
+                    obj.GetComponent<CrystalEvents>().m_Interface = this;
                     obj.GetComponent<CrystalEvents>().m_Id = m_Id;
                 }
             }
@@ -187,46 +193,48 @@ public class CrystalsBehaviour : MonoBehaviour
             crystalList = m_LastCrystalWave;
         }
 
-        bool aiCap = GetAiCount() > 10;
-        bool enoughCrystals = crystalList.Count < (6 / m_InitialPositions.Count);
-        if (aiCap || enoughCrystals) return;
+        bool aiCap = m_AiActive > Mathf.Floor(m_CrystalActive / 3.0f);
+        if (aiCap) return;
 
         int spawnPointCrystalIndex = Random.Range(0, crystalList.Count == 0 ? 0 : crystalList.Count);
         Vector2 spawnPointCrystal = crystalList[spawnPointCrystalIndex];
         Vector2 spawnPointOffset = m_SurroundOffsets[0] / 2;
         Vector2 spawnPointAi = spawnPointCrystal - spawnPointOffset;
         Vector3 newAiPosition = new Vector3(spawnPointAi.x, m_CrystalHeight, spawnPointAi.y);
-        var obj = LevelManager.instance.SpawnObj(m_AiTag, newAiPosition, Quaternion.identity);
+        var obj = LevelManager.instance.SpawnObj(m_AiTag, transform.position, Quaternion.identity);
         obj.GetComponent<AIStateMachine>().m_Id = m_Id;
+        obj.GetComponent<AIStateMachine>().m_Interface = this;
+        obj.GetComponent<NavMeshAgent>().SetDestination(newAiPosition);
+        m_AiActive++;
     }
 
-    private int GetAiCount()
-    {
-        int result = 0;
-        foreach (GameObject ai in LevelManager.instance.GetActiveInScene(m_AiTag))
-        {
-            if (ai.GetComponent<AIStateMachine>().m_Biome == LevelManager.instance.currentWorld && ai.GetComponent<AIStateMachine>().m_Id == m_Id)
-            {
-                result++;
-            }
-        }
+    // private int GetAiCount()
+    // {
+    //     int result = 0;
+    //     foreach (GameObject ai in LevelManager.instance.GetActiveInScene(m_AiTag))
+    //     {
+    //         if (ai.GetComponent<AIStateMachine>().m_Biome == LevelManager.instance.currentWorld && ai.GetComponent<AIStateMachine>().m_Id == m_Id)
+    //         {
+    //             result++;
+    //         }
+    //     }
+    //
+    //     return result;
+    // }
 
-        return result;
-    }
-
-    private int GetCrystalCount()
-    {
-        int result = 0;
-        foreach (GameObject Cry in LevelManager.instance.GetActiveInScene(m_CrystalTag))
-        {
-            if (Cry.GetComponent<CrystalEvents>().m_Biome == LevelManager.instance.currentWorld && Cry.GetComponent<CrystalEvents>().m_Id == m_Id)
-            {
-                result++;
-            }
-        }
-
-        return result;
-    }
+    // private int GetCrystalCount()
+    // {
+    //     int result = 0;
+    //     foreach (GameObject Cry in LevelManager.instance.GetActiveInScene(m_CrystalTag))
+    //     {
+    //         if (Cry.GetComponent<CrystalEvents>().m_Biome == LevelManager.instance.currentWorld && Cry.GetComponent<CrystalEvents>().m_Id == m_Id)
+    //         {
+    //             result++;
+    //         }
+    //     }
+    //
+    //     return result;
+    // }
     
     public void ToggleManuel()
     {

@@ -56,7 +56,6 @@ public class LevelManager : MonoBehaviour
 
     public string currentWorld = "";
     public List<Biome> Worlds;
-    public Dictionary<string, GameObject> WorldObjects;
     public List<string> WorldObjectNames;
     [SerializeField] private List<GameObject> Blockades;
 
@@ -108,6 +107,7 @@ public class LevelManager : MonoBehaviour
         }
 
         levelManager = this;
+        LoadGame();
         LoadLevel();
     }
 
@@ -115,62 +115,61 @@ public class LevelManager : MonoBehaviour
     {
     }
 
-    public void LoadLevel()
+    private void LoadGame()
     {
         m_Pools = FindObjectOfType<ObjPool>();
         m_MainCamera = Camera.main;
         m_Player = transform.GetChild(0).gameObject;
         m_PlayerHealthBar = transform.GetChild(1).gameObject;
+        
+        
+        playerDamage = 20.0f;
+
+        m_GreenCollected = 0;
+        m_RedCollected = 0;
+        m_YellowCollected = 0;
+        m_BlueCollected = 0;
+            
+        CollectAction += CollectCrystal;
+        playerGodmode = false;
+        WorldObjectNames = new List<string>();
+        m_Steps = 0;
+        inSequence = false;
+
+        m_BlueSpellAvailable = false;
+        m_YellowSpellAvailable = false;
+        m_GreenSpellAvailable = false;
+        m_RedSpellAvailable = false;
+
+        m_BlueSpellUnlocked = false;
+        m_YellowSpellUnlocked = false;
+        m_GreenSpellUnlocked = false;
+        m_RedSpellUnlocked = false;
+        
+        takeInput = false;
+        
+        WorldObjectNames.Add("IceEnv");
+        WorldObjectNames.Add("EarthEnv");
+        WorldObjectNames.Add("LavaEnv");
+        WorldObjectNames.Add("DesertEnv");
+    }
+
+    public void LoadLevel()
+    {
         m_Player.transform.position = GameObject.Find("PlayerSpawn").transform.position;
-        if (SceneManager.GetActiveScene().name != "MainMenu")
+
+        if (SceneManager.GetActiveScene().name == "MainMenu")
+        {
+            
+        }
+        else if (SceneManager.GetActiveScene().name == "IceEnv")
         {
             m_CrystalController = FindObjectsOfType<CrystalsBehaviour>().ToList();
             currentWorld = Worlds[0].name;
-            // WorldObjectNames.Add("IceEnv");
-            // WorldObjectNames.Add("EarthEnv");
-            // WorldObjectNames.Add("LavaEnv");
-            // WorldObjectNames.Add("DesertEnv");
-            // for (int i = 0; i < Worlds.Count; i++)
-            // {
-            //     GameObject obj = GameObject.Find(WorldObjectNames[i]);
-            //     WorldObjects.Add(Worlds[i].name, obj);
-            //     bool active = i == 0;
-            //     obj.SetActive(active);
-            // }
-
+            m_PlayerHealthBar.SetActive(false);
             AudioManager.instance.PlayMusic(MusicClip.Ice, 1.0f);
             m_PlayerHealthBar.SetActive(true);
             takeInput = true;
-
-            // m_Player.GetComponent<PlayerStateMachine>().TeleportSpawn(Worlds[0]);
-        }
-        else
-        {
-            playerGodmode = false;
-            WorldObjects = new Dictionary<string, GameObject>();
-            WorldObjectNames = new List<string>();
-            CollectAction += CollectCrystal;
-            m_Steps = 0;
-            inSequence = false;
-            takeInput = false;
-
-
-            playerDamage = 20.0f;
-
-            m_GreenCollected = 0;
-            m_RedCollected = 0;
-            m_YellowCollected = 0;
-            m_BlueCollected = 0;
-            m_BlueSpellAvailable = false;
-            m_YellowSpellAvailable = false;
-            m_GreenSpellAvailable = false;
-            m_RedSpellAvailable = false;
-
-            m_BlueSpellUnlocked = false;
-            m_YellowSpellUnlocked = false;
-            m_GreenSpellUnlocked = false;
-            m_RedSpellUnlocked = false;
-            m_PlayerHealthBar.SetActive(false);
         }
     }
 
@@ -335,34 +334,30 @@ public class LevelManager : MonoBehaviour
 
     public void GoNextBiome()
     {
-        AudioManager.instance.StopMusic();
-        inSequence = true;
-        int biomeIndex = GetBiomeIndex();
-        string nextBiomeName = Worlds[biomeIndex + 1].name;
-        WorldObjects[nextBiomeName].SetActive(true);
-        NextBiomeAction?.Invoke(Worlds[biomeIndex + 1]);
-
-        m_MainCamera.transform.position = Worlds[biomeIndex + 1].entrancePosition + new Vector3(0, 2, 0) -
-                                          m_MainCamera.GetComponent<CameraFollow>().GetOffset();
-        WorldObjects[currentWorld].SetActive(false);
-        currentWorld = Worlds[biomeIndex + 1].name;
-        AudioManager.instance.PlayMusic((MusicClip)biomeIndex + 1, 1.0f);
+        // AudioManager.instance.StopMusic();
+        // inSequence = true;
+        // int biomeIndex = GetBiomeIndex();
+        // string nextBiomeName = Worlds[biomeIndex + 1].name;
+        // NextBiomeAction?.Invoke(Worlds[biomeIndex + 1]);
+        //
+        // m_MainCamera.transform.position = Worlds[biomeIndex + 1].entrancePosition + new Vector3(0, 2, 0) -
+        //                                   m_MainCamera.GetComponent<CameraFollow>().GetOffset();
+        // currentWorld = Worlds[biomeIndex + 1].name;
+        // AudioManager.instance.PlayMusic((MusicClip)biomeIndex + 1, 1.0f);
     }
 
     public void GoLastBiome()
     {
-        AudioManager.instance.StopMusic();
-        inSequence = true;
-        int biomeIndex = GetBiomeIndex();
-        string nextBiomeName = Worlds[biomeIndex - 1].name;
-        WorldObjects[nextBiomeName].SetActive(true);
-        LastBiomeAction?.Invoke(Worlds[biomeIndex - 1]);
-
-        m_MainCamera.transform.position = Worlds[biomeIndex - 1].exitPosition + new Vector3(0, 2, 0) -
-                                          m_MainCamera.GetComponent<CameraFollow>().GetOffset();
-        WorldObjects[currentWorld].SetActive(false);
-        currentWorld = Worlds[biomeIndex - 1].name;
-        AudioManager.instance.PlayMusic((MusicClip)biomeIndex - 1, 1.0f);
+        // AudioManager.instance.StopMusic();
+        // inSequence = true;
+        // int biomeIndex = GetBiomeIndex();
+        // string nextBiomeName = Worlds[biomeIndex - 1].name;
+        // LastBiomeAction?.Invoke(Worlds[biomeIndex - 1]);
+        //
+        // m_MainCamera.transform.position = Worlds[biomeIndex - 1].exitPosition + new Vector3(0, 2, 0) -
+        //                                   m_MainCamera.GetComponent<CameraFollow>().GetOffset();
+        // currentWorld = Worlds[biomeIndex - 1].name;
+        // AudioManager.instance.PlayMusic((MusicClip)biomeIndex - 1, 1.0f);
     }
 
     public void UnlockBiome()
@@ -399,16 +394,15 @@ public class LevelManager : MonoBehaviour
         if (m_Steps == 0)
         {
             m_BlueSpellUnlocked = true;
+            SpellUnlockAction("Blue");
             CollectAction?.Invoke(20, "Blue");
-            m_Steps++;
         }
         else if (m_Steps == 1)
         {
             if (m_BlueCollected >= 300)
             {
                 CollectAction?.Invoke(-300, "Blue");
-                Blockades[0].SetActive(false);
-                m_Steps++;
+                // Blockades[0].SetActive(false);
             }
         }
         else if (m_Steps == 2)
@@ -416,10 +410,9 @@ public class LevelManager : MonoBehaviour
             if (m_GreenCollected >= 300)
             {
                 m_GreenSpellUnlocked = true;
-                CollectAction?.Invoke(-300, "Green");
                 SpellUnlockAction("Green");
-                Blockades[1].SetActive(false);
-                m_Steps++;
+                CollectAction?.Invoke(-300, "Green");
+                // Blockades[1].SetActive(false);
             }
         }
         else if (m_Steps == 3)
@@ -427,10 +420,9 @@ public class LevelManager : MonoBehaviour
             if (m_RedCollected >= 300)
             {
                 m_RedSpellUnlocked = true;
-                CollectAction?.Invoke(-300, "Red");
                 SpellUnlockAction("Red");
-                Blockades[2].SetActive(false);
-                m_Steps++;
+                CollectAction?.Invoke(-300, "Red");
+                // Blockades[2].SetActive(false);
             }
         }
         else if (m_Steps == 4)
@@ -438,12 +430,13 @@ public class LevelManager : MonoBehaviour
             if (m_YellowCollected >= 300)
             {
                 m_YellowSpellUnlocked = true;
-                CollectAction?.Invoke(-300, "Yellow");
                 SpellUnlockAction("Yellow");
-                Blockades[3].SetActive(false);
-                m_Steps++;
+                CollectAction?.Invoke(-300, "Yellow");
+                // Blockades[3].SetActive(false);
             }
         }
+
+        m_Steps++;
     }
 
     public void ToggleManuel()
@@ -468,7 +461,6 @@ public class LevelManager : MonoBehaviour
         {
             if (controller.m_Id == _id) return controller;
         }
-
         return null;
     }
 }

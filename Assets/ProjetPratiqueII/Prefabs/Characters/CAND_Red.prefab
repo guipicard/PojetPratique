@@ -19745,7 +19745,7 @@ Rigidbody:
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -19778,9 +19778,10 @@ MonoBehaviour:
   m_BulletSpawner: {fileID: 8239062785655041206}
   m_DamageTag: PlayerBullet
   m_BulletTag: Red_Arrow
-  m_TriggerDistance: 12
+  m_TriggerDistance: 10
   m_attackDistance: 8
   m_AiCanvas: {fileID: 9162693656850442753}
+  m_PlayerCanvas: {fileID: 0}
   m_HealthBar: {fileID: 8211945426033091208}
   m_Cooldown: 1
   m_Hp: 100
@@ -19798,8 +19799,10 @@ MonoBehaviour:
   m_CooldownElapsed: 0
   m_OutlineScript: {fileID: 0}
   m_SpawnPos: {x: 0, y: 0, z: 0}
+  m_Interface: {fileID: 0}
   lostTime: 2
   m_Biome: 
+  m_Id: 0
 --- !u!65 &3771089630824550882
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -37,6 +37,8 @@ public class AIStateMachine : MonoBehaviour
     [HideInInspector] public Outline m_OutlineScript;
     public Vector3 m_SpawnPos;
 
+    public CrystalsBehaviour m_Interface;
+
     private bool targetLost;
     private float lostElapsed;
     [SerializeField] private float lostTime;
@@ -132,6 +134,9 @@ public class AIStateMachine : MonoBehaviour
         if (m_Hp <= 0 && gameObject.activeSelf)
         {
             m_Dead = true;
+            m_Interface.m_AiActive--;
+            m_Interface = null;
+            m_Id = -1;
             LevelManager.instance.ToggleInactive(gameObject);
         }
         else

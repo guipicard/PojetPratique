@@ -8,6 +8,7 @@ public class CrystalEvents : MonoBehaviour
     [SerializeField] private string m_CrystalTag;
     [SerializeField] private string m_PartsTag;
     [SerializeField] private Vector3 m_InitialPosition;
+    public CrystalsBehaviour m_Interface;
     private bool m_CanGetDestroyed;
     private Outline m_OutlineScript;
     public string m_Biome;
@@ -32,13 +33,15 @@ public class CrystalEvents : MonoBehaviour
 
     public void GetMined()
     {
-        m_Id = -1;
         var position = transform.position;
         LevelManager.instance.SpawnObj(m_PartsTag, position, Quaternion.identity);
         LevelManager.instance.ToggleInactive(gameObject);
         LevelManager.instance.UpdateCrystalNums(m_CrystalTag);
         AudioManager.instance.PlaySound(SoundClip.CrystalExplosion, 1f, position);
         VfxManager.instance.PlayVfx(VfxClip.CrystalMine, position);
+        m_Id = -1;
+        m_Interface.m_CrystalActive--;
+        m_Interface = null;
     }
 
     public bool GetCanDestroy()

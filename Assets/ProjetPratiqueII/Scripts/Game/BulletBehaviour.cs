@@ -16,8 +16,6 @@ public class BulletBehaviour : MonoBehaviour
 
     private Vector3 m_TargetPosition;
 
-
-    // Start is called before the first frame update
     void Start()
     {
         m_InitialPosition = transform.position;

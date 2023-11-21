@@ -75,8 +75,6 @@ public class PlayerStateMachine : MonoBehaviour
     [Space]
     [Header("Spells")]
     [Space] // unlocks
-    [HideInInspector]
-    public bool m_BlueSpell;
 
     [HideInInspector] public bool m_YellowSpell;
     [HideInInspector] public bool m_GreenSpell;
@@ -106,7 +104,6 @@ public class PlayerStateMachine : MonoBehaviour
     [SerializeField] public Texture2D m_MineCursor;
     [SerializeField] public Texture2D m_AttackCursor;
 
-    private bool m_YellowSpellActive;
 
     private string m_CurrentSun;
     [SerializeField] private List<string> m_Colors;
@@ -154,7 +151,6 @@ public class PlayerStateMachine : MonoBehaviour
         m_AimingYellow = false;
         m_AimingRed = false;
         m_Mining = false;
-        m_BlueSpell = false;
         m_YellowSpell = false;
         m_GreenSpell = false;
         m_RedSpell = false;
@@ -170,7 +166,6 @@ public class PlayerStateMachine : MonoBehaviour
         m_RegenerateElapsed = 0;
         m_OutlinedGameObject = null;
         UpdateHealthBar();
-        m_YellowSpellActive = false;
 
         LevelManager.instance.NextBiomeAction += TeleportNext;
         LevelManager.instance.LastBiomeAction += TeleportLast;
@@ -249,7 +244,6 @@ public class PlayerStateMachine : MonoBehaviour
                 }
                 else if (m_TargetHit.collider.gameObject.CompareTag("CaveMan"))
                 {
-                    if (!m_BlueSpell) unlockSpell("Blue");
                     LevelManager.instance.LevelUp();
                 }
                 else
@@ -344,7 +338,7 @@ public class PlayerStateMachine : MonoBehaviour
                 {
                     if (m_TargetHit.collider.gameObject.layer == 7)
                     {
-                        if (Vector3.Distance(transform.position, m_TargetHit.collider.transform.position) <
+                        if (Vector3.Distance(m_Transform.position, m_TargetHit.collider.transform.position) <
                             m_AttackRange)
                         {
                             m_TargetCrystal = null;
@@ -434,13 +428,12 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void unlockSpell(string _color)
     {
-        var position = transform.position;
+        var position = m_Transform.position;
         VfxManager.instance.PlayVfx(VfxClip.Buff, position);
         AudioManager.instance.PlaySound(SoundClip.Buff, 1f, position);
         switch (_color)
         {
             case "Blue":
-                m_BlueSpell = true;
                 ChangeSun(_color);
                 break;
             case "Green":
@@ -472,7 +465,7 @@ public class PlayerStateMachine : MonoBehaviour
         LevelManager.instance.CollectAction?.Invoke(-m_GreenSpellCost, "Green");
         LevelManager.instance.SpellCastAction?.Invoke("Green");
         LevelManager.instance.SetSpellAvailable("Green", false);
-        var position = transform.position;
+        var position = m_Transform.position;
         VfxManager.instance.PlayVfx(VfxClip.Heal, position);
         AudioManager.instance.PlaySound(SoundClip.Heal, 1f, position);
         Heal(m_HealAmount);
@@ -685,8 +678,8 @@ public class PlayerStateMachine : MonoBehaviour
     {
         m_TargetCrystal = null;
         m_StoppingDistance = 0;
-        transform.position = _biome.entrancePosition;
-        transform.eulerAngles = _biome.entranceRotation;
+        m_Transform.position = _biome.entrancePosition;
+        m_Transform.eulerAngles = _biome.entranceRotation;
     }
 
     private void TeleportNextAnim(Biome _biome)
@@ -707,16 +700,16 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void TeleportNext(Biome _biome)
     {
-        transform.position = _biome.StartRoad;
-        transform.eulerAngles = _biome.entranceRotation;
+        m_Transform.position = _biome.StartRoad;
+        m_Transform.eulerAngles = _biome.entranceRotation;
         m_Destination = _biome.entrancePosition;
         SetState(new PlayerMoving(this));
     }
 
     private void TeleportLast(Biome _biome)
     {
-        transform.position = _biome.EndRoad;
-        transform.eulerAngles = _biome.exitRotation;
+        m_Transform.position = _biome.EndRoad;
+        m_Transform.eulerAngles = _biome.exitRotation;
         m_Destination = _biome.exitPosition;
         SetState(new PlayerMoving(this));
     }
@@ -732,7 +725,7 @@ public class PlayerStateMachine : MonoBehaviour
     {
         if (LevelManager.instance.currentWorld == "Ice")
         {
-            AudioManager.instance.PlaySnowStep(transform.position);
+            AudioManager.instance.PlaySnowStep(m_Transform.position);
         }
     }
 }

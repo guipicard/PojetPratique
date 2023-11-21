@@ -5,7 +5,6 @@ using UnityEngine;
 
 public enum VfxClip
 {
-    RedAOE,
     RedSpell,
     ToonPunch,
     Buff,
