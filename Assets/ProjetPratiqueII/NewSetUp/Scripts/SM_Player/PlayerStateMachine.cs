@@ -235,6 +235,11 @@ public class PlayerStateMachine : MonoBehaviour
         {
             if (Physics.Raycast(m_TargetRay, out m_TargetHit))
             {
+                if (m_TargetHit.collider.gameObject.CompareTag("Spawner")) // DISABLE CAMP
+                {
+                    m_TargetHit.collider.transform.parent.GetComponent<CrystalsBehaviour>().DisableCamp();
+                    return;
+                }    
                 if (m_TargetHit.collider.gameObject.layer == 6)
                 {
                     m_TargetCrystal = m_TargetHit.collider.gameObject;

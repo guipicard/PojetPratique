@@ -24,6 +24,7 @@ TagManager:
   - Yellow_Hammer
   - Red_Arrow
   - CaveMan
+  - Spawner
   layers:
   - Default
   - TransparentFX
