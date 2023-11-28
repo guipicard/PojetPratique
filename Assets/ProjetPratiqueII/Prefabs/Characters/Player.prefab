@@ -3050,6 +3050,7 @@ MonoBehaviour:
   m_Destination: {x: 0, y: 0, z: 0}
   m_StoppingDistance: 0
   m_BulletSpawner: {fileID: 3814691236362228934}
+  m_BulletTag: 
   m_DamageTag: EnemyBullet
   m_HealthBar: {fileID: 0}
   m_PlayerCanvas: {fileID: 0}
@@ -3072,7 +3073,6 @@ MonoBehaviour:
   m_TargetCrystal: {fileID: 0}
   m_TargetEnemy: {fileID: 0}
   m_Mining: 0
-  m_BlueSpell: 0
   m_YellowSpell: 0
   m_GreenSpell: 0
   m_RedSpell: 0
@@ -3084,7 +3084,6 @@ MonoBehaviour:
   m_BlueBall: {fileID: 4660555348182757862, guid: 1cff07f256826384985ef89e7fed9203, type: 3}
   m_MineCursor: {fileID: 2800000, guid: 2134a14314836384eb79d14d69bf3a8c, type: 3}
   m_AttackCursor: {fileID: 2800000, guid: 795298f646aacc6439b506fdd59a32a2, type: 3}
-  HealingVFX: {fileID: 1042361525996828, guid: 64db815a7d8205e41a9364747349015f, type: 3}
   m_Colors:
   - Blue
   - Green
@@ -5501,7 +5500,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 723326783639358502, guid: b858bb1b878c94e44a8d962e4ab1c22e, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10469,7 +10468,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4378253043447684798, guid: bbe35b3b6cef5654f8df38b66e1bba42, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10647,7 +10646,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2658692086986218101, guid: eee98cf35debcd446ac96157f53f2c49, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3435757170619367631, guid: eee98cf35debcd446ac96157f53f2c49, type: 3}
       propertyPath: m_RootOrder
@@ -17686,7 +17685,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 638456201653107473, guid: 9f9fdc7582d8cc34d8f4da802e5dbfff, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

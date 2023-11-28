@@ -34,9 +34,8 @@ public class PlayerMoving : PlayerState
 
         if (m_Transform.rotation != m_TargetRotation)
         {
-            // Slerp looks smoother than Lerp
             float t = Time.fixedDeltaTime * m_RotationSpeed;
-            m_Transform.rotation = Quaternion.Slerp(m_Transform.rotation, m_TargetRotation, t);
+            m_Transform.rotation = Quaternion.Lerp(m_Transform.rotation, m_TargetRotation, t);
         }
     }
 

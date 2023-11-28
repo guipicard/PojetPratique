@@ -6,6 +6,10 @@ using UnityEngine.AI;
 
 public class CrystalsBehaviour : MonoBehaviour
 {
+    [SerializeField][Range(5.0f, 30.0f)] public float m_CrystalSpawnTimer;
+    public int m_AiByCrystals;
+    [SerializeField] private float m_CrystalDisableTimer;
+
     [SerializeField] private string m_CrystalName;
     [SerializeField] private string m_CrystalTag;
     [SerializeField] private string m_AiTag;
@@ -31,6 +35,7 @@ public class CrystalsBehaviour : MonoBehaviour
     public int m_Id;
 
     private bool m_IsDisabled;
+    private bool m_IsUnlocked;
 
     [SerializeField] private GameObject m_Ground;
     [SerializeField] private Material m_MaterialEnabled;
@@ -38,6 +43,7 @@ public class CrystalsBehaviour : MonoBehaviour
 
     void Start()
     {
+        m_IsUnlocked = false;
         m_IsDisabled = false;
         m_ManuelControl = false;
         m_Pos2D = new Vector2(transform.position.x, transform.position.z);
@@ -75,7 +81,7 @@ public class CrystalsBehaviour : MonoBehaviour
         if (m_IsDisabled)
         {
             m_Elapsed += Time.deltaTime;
-            if (m_Elapsed > 30.0f)
+            if (m_Elapsed > m_CrystalDisableTimer)
             {
                 m_IsDisabled = false;
                 m_Ground.GetComponent<Renderer>().material = m_MaterialEnabled;
@@ -84,7 +90,7 @@ public class CrystalsBehaviour : MonoBehaviour
         else
         {
             if (!m_ManuelControl) m_Elapsed += Time.deltaTime;
-            if (m_Elapsed > LevelManager.instance.m_CrystalSpawnTimer)
+            if (m_Elapsed > m_CrystalSpawnTimer)
             {
                 CrystalDuplicationLoop();
             }
@@ -132,7 +138,6 @@ public class CrystalsBehaviour : MonoBehaviour
                 m_Ray.origin = new Vector3(m_currentPosition.x, 5.0f, m_currentPosition.y);
                 if (Physics.Raycast(m_Ray, out m_HitInfo, Mathf.Infinity, 1 << 8))
                 {
-                    Debug.Log(Vector2.Distance(m_currentPosition, m_Pos2D));
                     if (Vector2.Distance(m_currentPosition, m_Pos2D) > 1.0f)
                     {
                         Debug.Log("distance");
@@ -152,12 +157,13 @@ public class CrystalsBehaviour : MonoBehaviour
             var chances = Random.Range(0, m_SpawnChances);
 
             m_Ray = new Ray(new Vector3(pos.x, transform.position.y + 5.0f, pos.y), Vector3.down);
-            var myRaycast = Physics.Raycast(m_Ray, out m_HitInfo, Mathf.Infinity, 1 << 8 | 1 << 6);
+            var myRaycast = Physics.Raycast(m_Ray, out m_HitInfo, Mathf.Infinity, 1 << 8 | 1 << 6| 1 << 18);
             if (chances == 0) continue;
             if (myRaycast)
             {
+                if (m_HitInfo.collider.gameObject.layer == 10) continue;
                 CrystalEvents eventScript = m_HitInfo.collider.GetComponent<CrystalEvents>();
-                if (m_HitInfo.collider.gameObject.layer == 6 && eventScript.GetCanDestroy())
+                if (m_HitInfo.collider.gameObject.layer == 6)
                 {
                     int hitId = eventScript.m_Id;
                     int hitActiveInSceneCount = LevelManager.instance.GetSpawner(hitId).m_CrystalActive;
@@ -205,7 +211,7 @@ public class CrystalsBehaviour : MonoBehaviour
             crystalList = m_LastCrystalWave;
         }
 
-        bool aiCap = m_AiActive >= Mathf.Ceil(m_CrystalActive / 3.0f);
+        bool aiCap = m_AiActive >= Mathf.Ceil(m_CrystalActive / m_AiByCrystals);
         if (aiCap) return;
 
         int spawnPointCrystalIndex = Random.Range(0, crystalList.Count == 0 ? 0 : crystalList.Count);
@@ -260,10 +266,25 @@ public class CrystalsBehaviour : MonoBehaviour
             m_IsDisabled = true;
             m_Elapsed = 0.0f;
             m_Ground.GetComponent<Renderer>().material = m_MaterialDisabled;
+            if (!GetIsUnlocked())
+            {
+                SetUnlocked();
+            }
         }
         else
         {
             LevelManager.instance.ErrorAction?.Invoke("You must first clear the camp before disabling it.");
         }
+    }
+
+    public bool GetIsUnlocked()
+    {
+        return m_IsUnlocked;    
+    }
+
+    public void SetUnlocked()
+    {
+        m_IsUnlocked = true;
+        LevelManager.instance.UnlockBiome(m_Id);
     }
 }

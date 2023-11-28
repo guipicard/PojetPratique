@@ -7,9 +7,8 @@ using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
-    [SerializeField] [Range(5.0f, 30.0f)] public float m_CrystalSpawnTimer;
+    
     public float m_CrystalSpaceBetween;
-    public int m_AiByCrystals;
 
     [Header("Collectables")] public int m_GreenCollected;
     public int m_RedCollected;
@@ -50,14 +49,13 @@ public class LevelManager : MonoBehaviour
 
     public bool playerGodmode;
 
-    public List<List<GameObject>> SpawnPoints;
 
     private static LevelManager levelManager;
 
     public string currentWorld = "";
     public List<Biome> Worlds;
     public List<string> WorldObjectNames;
-    [SerializeField] private List<GameObject> Blockades;
+    GameObject m_Blockades;
 
     public bool inSequence;
     public bool takeInput;
@@ -156,6 +154,7 @@ public class LevelManager : MonoBehaviour
 
     public void LoadLevel()
     {
+        m_Blockades = GameObject.Find("Blockades");
         m_Player.transform.position = GameObject.Find("PlayerSpawn").transform.position;
 
         if (SceneManager.GetActiveScene().name == "MainMenu")
@@ -360,16 +359,9 @@ public class LevelManager : MonoBehaviour
         // AudioManager.instance.PlayMusic((MusicClip)biomeIndex - 1, 1.0f);
     }
 
-    public void UnlockBiome()
+    public void UnlockBiome(int index)
     {
-        foreach (var barrage in Blockades)
-        {
-            if (barrage.activeSelf)
-            {
-                barrage.SetActive(false);
-                break;
-            }
-        }
+        m_Blockades.transform.GetChild(index).gameObject.SetActive(false); 
     }
 
     public bool GetSpellUnlocked(string _color)
@@ -395,7 +387,7 @@ public class LevelManager : MonoBehaviour
         {
             m_BlueSpellUnlocked = true;
             SpellUnlockAction("Blue");
-            CollectAction?.Invoke(20, "Blue");
+            CollectAction?.Invoke(0, "Blue");
         }
         else if (m_Steps == 1)
         {

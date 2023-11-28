@@ -10,17 +10,14 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] private float m_Speed;
 
     private Vector3 m_Position;
-    private float m_PosY;
 
     void Start()
     {
         LevelManager.instance.LoadLevel();
         m_Player = LevelManager.instance.m_Player.transform;
         m_Position = m_Player.position + new Vector3(0, 1, 0) - m_Offset;
-        // m_Position.y = m_PosY - m_Offset.y;
         transform.position = m_Position;
-        m_Position += m_Offset;
-        transform.LookAt(m_Position);
+        transform.LookAt(m_Player.position + new Vector3(0, 1, 0));
     }
 
     void Update()
@@ -32,9 +29,10 @@ public class CameraFollow : MonoBehaviour
         if (LevelManager.instance.takeInput)
         {
             m_Position = m_Player.position + new Vector3(0, 1, 0) - m_Offset;
-            // m_Position.y = m_PosY - m_Offset.y;
             m_Position.y = transform.position.y;
             transform.position = Vector3.Lerp(transform.position, m_Position, Time.deltaTime * m_Speed);
+            //m_Position += m_Offset;
+            
         }
     }
 

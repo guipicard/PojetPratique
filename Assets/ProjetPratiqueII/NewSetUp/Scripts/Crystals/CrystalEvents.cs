@@ -7,16 +7,13 @@ public class CrystalEvents : MonoBehaviour
 {
     [SerializeField] private string m_CrystalTag;
     [SerializeField] private string m_PartsTag;
-    [SerializeField] private Vector3 m_InitialPosition;
     public CrystalsBehaviour m_Interface;
-    private bool m_CanGetDestroyed;
     private Outline m_OutlineScript;
     public string m_Biome;
     public int m_Id;
-    
+
     void Start()
     {
-        m_CanGetDestroyed = Vector3.Distance(transform.position, m_InitialPosition) > 9.0f;
         m_Biome = LevelManager.instance.currentWorld;
     }
 
@@ -24,7 +21,6 @@ public class CrystalEvents : MonoBehaviour
     {
         m_OutlineScript = GetComponent<Outline>();
         m_OutlineScript.enabled = false;
-        m_CanGetDestroyed = Vector3.Distance(transform.position, m_InitialPosition) > 9.0f;
     }
 
     private void OnDisable()
@@ -39,14 +35,12 @@ public class CrystalEvents : MonoBehaviour
         LevelManager.instance.UpdateCrystalNums(m_CrystalTag);
         AudioManager.instance.PlaySound(SoundClip.CrystalExplosion, 1f, position);
         VfxManager.instance.PlayVfx(VfxClip.CrystalMine, position);
-        m_Id = -1;
-        m_Interface.m_CrystalActive--;
-        m_Interface = null;
-    }
-
-    public bool GetCanDestroy()
-    {
-        return m_CanGetDestroyed;
+        if (m_Id != -1)
+        {
+            m_Id = -1;
+            m_Interface.m_CrystalActive--;
+            m_Interface = null;
+        }
     }
 
     public Outline GetOutlineComponent()
