@@ -55,13 +55,20 @@ public class UiComponents : MonoBehaviour
     private int m_YellowSpellCost;
 
     private int unlockPrice;
-
+    
+    [SerializeField] private GameObject m_DialogueObj;
+    
     void Start()
     {
         m_ErrorElapsed = 0.0f;
 
         unlockPrice = LevelManager.instance.m_UnlockPrice;
 
+        LevelManager.instance.ShowDialogue += ShowDialogue;
+        LevelManager.instance.HideDialogue += HideDialogue;
+
+        HideDialogue();
+        
         LevelManager.instance.ErrorAction += ShowErrorMessage;
         LevelManager.instance.CollectAction += UpdateUi;
         LevelManager.instance.SpellCastAction += TriggerSpell;
@@ -313,5 +320,18 @@ public class UiComponents : MonoBehaviour
         m_ErrorText.text = _message;
         m_ErrorText.alpha = 1.0f;
         m_ErrorElapsed = 0.0f;
+    }
+    
+    private void ShowDialogue()
+    {
+        LevelManager.instance.takeInput = false;
+        m_DialogueObj.SetActive(true);
+    }
+
+    private void HideDialogue()
+    {
+        LevelManager.instance.takeInput = true;
+        m_DialogueObj.SetActive(false);
+        
     }
 }

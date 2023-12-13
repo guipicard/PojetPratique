@@ -33,6 +33,12 @@ public class LevelManager : MonoBehaviour
     public Action<Biome> NextAnimAction;
     public Action<Biome> LastAnimAction;
 
+    public Action TriggerDialogue;
+    public Action<Narratives> StartDialogue;
+    public Action EndDialogue;
+    public Action ShowDialogue;
+    public Action HideDialogue;
+
     private bool m_BlueSpellAvailable;
     private bool m_YellowSpellAvailable;
     private bool m_GreenSpellAvailable;
@@ -73,6 +79,8 @@ public class LevelManager : MonoBehaviour
 
     public GameObject m_Player;
     public GameObject m_PlayerHealthBar;
+
+    public bool m_InTutorial;
 
     public static LevelManager instance
     {
@@ -115,6 +123,7 @@ public class LevelManager : MonoBehaviour
 
     private void LoadGame()
     {
+        m_InTutorial = true;
         m_Pools = FindObjectOfType<ObjPool>();
         m_MainCamera = Camera.main;
         m_Player = transform.GetChild(0).gameObject;
@@ -163,6 +172,7 @@ public class LevelManager : MonoBehaviour
         }
         else if (SceneManager.GetActiveScene().name == "IceEnv")
         {
+            
             m_CrystalController = FindObjectsOfType<CrystalsBehaviour>().ToList();
             currentWorld = Worlds[0].name;
             m_PlayerHealthBar.SetActive(false);
@@ -455,4 +465,6 @@ public class LevelManager : MonoBehaviour
         }
         return null;
     }
+
+    
 }

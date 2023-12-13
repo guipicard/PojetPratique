@@ -238,8 +238,8 @@ public class PlayerStateMachine : MonoBehaviour
                 if (m_TargetHit.collider.gameObject.CompareTag("Spawner")) // DISABLE CAMP
                 {
                     CrystalsBehaviour Cb = m_TargetHit.collider.transform.parent.gameObject.GetComponent<CrystalsBehaviour>();
-                    
                     Cb.DisableCamp();
+                    
                     return;
                 }    
                 if (m_TargetHit.collider.gameObject.layer == 6)
@@ -251,7 +251,7 @@ public class PlayerStateMachine : MonoBehaviour
                 }
                 else if (m_TargetHit.collider.gameObject.CompareTag("CaveMan"))
                 {
-                    LevelManager.instance.LevelUp();
+                    m_TargetHit.collider.gameObject.GetComponent<CaveManBehaviour>().EnterDialogue();
                 }
                 else
                 {

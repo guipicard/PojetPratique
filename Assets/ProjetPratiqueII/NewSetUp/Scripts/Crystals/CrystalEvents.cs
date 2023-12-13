@@ -31,15 +31,19 @@ public class CrystalEvents : MonoBehaviour
     {
         var position = transform.position;
         LevelManager.instance.SpawnObj(m_PartsTag, position, Quaternion.identity);
-        LevelManager.instance.ToggleInactive(gameObject);
-        LevelManager.instance.UpdateCrystalNums(m_CrystalTag);
         AudioManager.instance.PlaySound(SoundClip.CrystalExplosion, 1f, position);
         VfxManager.instance.PlayVfx(VfxClip.CrystalMine, position);
         if (m_Id != -1)
         {
+            LevelManager.instance.UpdateCrystalNums(m_CrystalTag);
+            LevelManager.instance.ToggleInactive(gameObject);
             m_Id = -1;
             m_Interface.m_CrystalActive--;
             m_Interface = null;
+        }
+        else
+        {
+            Destroy(gameObject);    
         }
     }
 

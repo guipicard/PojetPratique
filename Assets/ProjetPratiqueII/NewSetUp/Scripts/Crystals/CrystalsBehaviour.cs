@@ -41,6 +41,8 @@ public class CrystalsBehaviour : MonoBehaviour
     [SerializeField] private Material m_MaterialEnabled;
     [SerializeField] private Material m_MaterialDisabled;
 
+    
+
     void Start()
     {
         m_IsUnlocked = false;
@@ -140,7 +142,6 @@ public class CrystalsBehaviour : MonoBehaviour
                 {
                     if (Vector2.Distance(m_currentPosition, m_Pos2D) > 1.0f)
                     {
-                        Debug.Log("distance");
                         m_PotentialPosition.Add(m_currentPosition);
                     }
                 }
@@ -225,35 +226,6 @@ public class CrystalsBehaviour : MonoBehaviour
         obj.GetComponent<NavMeshAgent>().SetDestination(newAiPosition);
         m_AiActive++;
     }
-
-    // private int GetAiCount()
-    // {
-    //     int result = 0;
-    //     foreach (GameObject ai in LevelManager.instance.GetActiveInScene(m_AiTag))
-    //     {
-    //         if (ai.GetComponent<AIStateMachine>().m_Biome == LevelManager.instance.currentWorld && ai.GetComponent<AIStateMachine>().m_Id == m_Id)
-    //         {
-    //             result++;
-    //         }
-    //     }
-    //
-    //     return result;
-    // }
-
-    // private int GetCrystalCount()
-    // {
-    //     int result = 0;
-    //     foreach (GameObject Cry in LevelManager.instance.GetActiveInScene(m_CrystalTag))
-    //     {
-    //         if (Cry.GetComponent<CrystalEvents>().m_Biome == LevelManager.instance.currentWorld && Cry.GetComponent<CrystalEvents>().m_Id == m_Id)
-    //         {
-    //             result++;
-    //         }
-    //     }
-    //
-    //     return result;
-    // }
-
     public void ToggleManuel()
     {
         m_ManuelControl = !m_ManuelControl;
@@ -266,6 +238,8 @@ public class CrystalsBehaviour : MonoBehaviour
             m_IsDisabled = true;
             m_Elapsed = 0.0f;
             m_Ground.GetComponent<Renderer>().material = m_MaterialDisabled;
+            LevelManager.instance.ShowDialogue?.Invoke();
+            LevelManager.instance.TriggerDialogue?.Invoke(); 
             if (!GetIsUnlocked())
             {
                 SetUnlocked();
